@@ -12,49 +12,56 @@
             font-family: Arial, sans-serif;
             min-height: 100vh;
             margin: 0;
-            padding: 20px;
+            padding: 10px;
             touch-action: manipulation;
+            overscroll-behavior: none;
+            -webkit-touch-callout: none;
+            -webkit-user-select: none;
+            user-select: none;
         }
 
         .container {
             text-align: center;
             max-width: 100%;
+            padding: 0 5px;
         }
 
         h1 {
             color: #333;
-            margin-bottom: 30px;
-            font-size: clamp(24px, 5vw, 36px);
+            margin-bottom: 10px;
+            font-size: clamp(16px, 3.5vw, 24px);
         }
         
         #game-board {
             border: 2px solid #333;
             background-color: #111;
             cursor: pointer;
-            box-shadow: 0 0 20px rgba(0,0,0,0.2);
-            max-width: 100%;
+            box-shadow: 0 0 10px rgba(0,0,0,0.2);
+            max-width: 95%;
             height: auto;
+            touch-action: none;
+            -webkit-tap-highlight-color: transparent;
         }
 
         .game-stats {
-            margin: 20px 0;
-            font-size: clamp(18px, 4vw, 24px);
+            margin: 10px 0;
+            font-size: clamp(14px, 3vw, 18px);
             color: #333;
             font-weight: bold;
         }
 
         .controls {
-            margin: 20px 0;
-            padding: 15px;
+            margin: 10px 0;
+            padding: 8px;
             background: #fff;
-            border-radius: 8px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            border-radius: 6px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
         }
 
         .controls p {
-            margin: 10px 0;
+            margin: 5px 0;
             color: #666;
-            font-size: clamp(14px, 3vw, 16px);
+            font-size: clamp(10px, 2vw, 12px);
         }
 
         .pause-overlay {
@@ -62,16 +69,19 @@
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            font-size: clamp(24px, 6vw, 32px);
+            font-size: clamp(16px, 4vw, 24px);
             color: white;
             text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
             display: none;
         }
 
         .mobile-controls {
-            display: none;
-            margin-top: 20px;
-            gap: 10px;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 5px;
+            width: min(250px, 90vw);
+            margin: 10px auto;
+            touch-action: manipulation;
         }
 
         #achievement-image {
@@ -79,42 +89,70 @@
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            max-width: 200px;
+            max-width: min(150px, 40vw);
             display: none;
             z-index: 1000;
         }
 
-        @media (max-width: 768px) {
-            .mobile-controls {
-                display: grid;
-                grid-template-columns: repeat(3, 1fr);
-                width: 200px;
-            }
+        .control-btn {
+            padding: 10px 8px;
+            background: #333;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 16px;
+            touch-action: manipulation;
+            user-select: none;
+            -webkit-tap-highlight-color: transparent;
+            -webkit-touch-callout: none;
+            cursor: pointer;
+            min-height: 44px;
+        }
 
-            .control-btn {
-                padding: 15px;
-                background: #333;
-                color: white;
-                border: none;
-                border-radius: 5px;
-                font-size: 20px;
-                touch-action: manipulation;
+        .control-btn:active {
+            background: #555;
+        }
+
+        @media (min-width: 769px) {
+            .mobile-controls {
+                display: none;
+            }
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding: 5px;
             }
 
             .controls p:not(:first-child) {
                 display: none;
             }
+
+            .container {
+                padding: 0 3px;
+            }
+            
+            .control-btn {
+                font-size: 20px;
+                padding: 12px 8px;
+            }
+        }
+
+        footer {
+            margin-top: 10px;
+            font-size: 12px;
+            color: #666;
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>TETRIS BUATAN ORANG SIGMA</h1>
+        <h1>TETRIS BY DAFFA ALZEINNA</h1>
         <div class="game-stats">
             Score: <span id="score">0</span><br>
             Best Score: <span id="best-score">0</span>
         </div>
-        <canvas id="game-board" width="300" height="600"></canvas>
+        <canvas id="game-board" width="240" height="480"></canvas>
         <div class="pause-overlay" id="pause-text">PAUSED</div>
         <img id="achievement-image" src="WhatsApp Image 2025-02-06 at 07.27.35_3bc29a35.jpg" alt="New High Score!">
         <div class="controls">
@@ -132,16 +170,17 @@
             <button class="control-btn" id="right-btn">→</button>
             <button class="control-btn" id="down-btn">↓</button>
             <button class="control-btn" id="drop-btn">⬇️</button>
+            <button class="control-btn" id="pause-btn">⏸️</button>
         </div>
         <footer>
-            <p>Created by daffa sigma | respek ye</p>
+            <p>Created by daffa alzeinna | develover baik hati</p>
         </footer>
     </div>
 
     <script>
         const canvas = document.getElementById('game-board');
         const ctx = canvas.getContext('2d');
-        const BLOCK_SIZE = 30;
+        const BLOCK_SIZE = 24;
         const BOARD_WIDTH = 10;
         const BOARD_HEIGHT = 20;
         let isPaused = false;
@@ -155,14 +194,25 @@
         let dragStartX = 0;
         let dragStartY = 0;
         let originalPiecePos = {x: 0, y: 0};
+        let touchStartX = null;
+        let touchStartY = null;
 
         document.getElementById('best-score').textContent = bestScore;
+
+        // Prevent scrolling when touching the canvas
+        canvas.addEventListener('touchstart', function(e) {
+            e.preventDefault();
+        }, { passive: false });
+
+        canvas.addEventListener('touchmove', function(e) {
+            e.preventDefault();
+        }, { passive: false });
 
         // Adjust canvas size based on screen size
         function resizeCanvas() {
             const container = document.querySelector('.container');
-            const maxWidth = Math.min(300, container.offsetWidth - 40);
-            const height = (maxWidth / 300) * 600;
+            const maxWidth = Math.min(240, container.offsetWidth - 10);
+            const height = (maxWidth / 240) * 480;
             
             canvas.style.width = maxWidth + 'px';
             canvas.style.height = height + 'px';
@@ -393,10 +443,13 @@
         canvas.addEventListener('touchmove', drag);
         canvas.addEventListener('mouseup', endDrag);
         canvas.addEventListener('touchend', endDrag);
+        canvas.addEventListener('mouseleave', endDrag);
 
         function startDrag(e) {
             if (isPaused) return;
-            e.preventDefault();
+            if (e.type.startsWith('touch')) {
+                e.preventDefault();
+            }
             
             const pos = getMousePos(e);
             dragStartX = pos.x;
@@ -407,7 +460,9 @@
 
         function drag(e) {
             if (!isDragging || isPaused) return;
-            e.preventDefault();
+            if (e.type.startsWith('touch')) {
+                e.preventDefault();
+            }
             
             const pos = getMousePos(e);
             const deltaX = pos.x - dragStartX;
@@ -455,12 +510,62 @@
             }
         });
 
-        // Mobile controls
-        document.getElementById('left-btn').addEventListener('click', () => move(-1));
-        document.getElementById('right-btn').addEventListener('click', () => move(1));
-        document.getElementById('down-btn').addEventListener('click', () => drop());
-        document.getElementById('rotate-btn').addEventListener('click', () => rotate());
-        document.getElementById('drop-btn').addEventListener('click', () => hardDrop());
+        // Mobile controls with touch feedback
+        const addMobileButton = (id, action) => {
+            const btn = document.getElementById(id);
+            let pressTimer;
+            let isPressed = false;
+            
+            const startAction = (e) => {
+                e.preventDefault();
+                if (!isPaused && !isPressed) {
+                    isPressed = true;
+                    action();
+                    btn.style.background = '#555';
+                    if (id === 'down-btn') {
+                        pressTimer = setInterval(action, 100);
+                    }
+                }
+            };
+
+            const endAction = () => {
+                isPressed = false;
+                btn.style.background = '#333';
+                if (pressTimer) {
+                    clearInterval(pressTimer);
+                }
+            };
+
+            btn.addEventListener('touchstart', startAction);
+            btn.addEventListener('mousedown', startAction);
+            btn.addEventListener('touchend', endAction);
+            btn.addEventListener('mouseup', endAction);
+            btn.addEventListener('mouseleave', endAction);
+        };
+
+        addMobileButton('left-btn', () => move(-1));
+        addMobileButton('right-btn', () => move(1));
+        addMobileButton('down-btn', () => drop());
+        addMobileButton('rotate-btn', () => rotate());
+        addMobileButton('drop-btn', () => hardDrop());
+        
+        const pauseBtn = document.getElementById('pause-btn');
+        pauseBtn.addEventListener('touchstart', (e) => {
+            e.preventDefault();
+            togglePause();
+            pauseBtn.style.background = '#555';
+        });
+        
+        pauseBtn.addEventListener('touchend', () => {
+            pauseBtn.style.background = '#333';
+        });
+
+        // Prevent default touch behaviors
+        document.addEventListener('touchmove', (e) => {
+            if (e.target.tagName !== 'CANVAS') {
+                e.preventDefault();
+            }
+        }, { passive: false });
 
         currentPiece = createPiece();
         update();

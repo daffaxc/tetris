@@ -12,21 +12,24 @@
             font-family: Arial, sans-serif;
             min-height: 100vh;
             margin: 0;
-            padding: 10px; /* Reduced padding */
+            padding: 10px;
             touch-action: manipulation;
             overscroll-behavior: none;
+            -webkit-touch-callout: none;
+            -webkit-user-select: none;
+            user-select: none;
         }
 
         .container {
             text-align: center;
             max-width: 100%;
-            padding: 0 5px; /* Reduced padding */
+            padding: 0 5px;
         }
 
         h1 {
             color: #333;
-            margin-bottom: 10px; /* Reduced margin */
-            font-size: clamp(16px, 3.5vw, 24px); /* Smaller font size */
+            margin-bottom: 10px;
+            font-size: clamp(16px, 3.5vw, 24px);
         }
         
         #game-board {
@@ -34,30 +37,31 @@
             background-color: #111;
             cursor: pointer;
             box-shadow: 0 0 10px rgba(0,0,0,0.2);
-            max-width: 95%; /* Slightly smaller width */
+            max-width: 95%;
             height: auto;
             touch-action: none;
+            -webkit-tap-highlight-color: transparent;
         }
 
         .game-stats {
-            margin: 10px 0; /* Reduced margin */
-            font-size: clamp(14px, 3vw, 18px); /* Smaller font */
+            margin: 10px 0;
+            font-size: clamp(14px, 3vw, 18px);
             color: #333;
             font-weight: bold;
         }
 
         .controls {
-            margin: 10px 0; /* Reduced margin */
-            padding: 8px; /* Reduced padding */
+            margin: 10px 0;
+            padding: 8px;
             background: #fff;
             border-radius: 6px;
             box-shadow: 0 2px 5px rgba(0,0,0,0.1);
         }
 
         .controls p {
-            margin: 5px 0; /* Reduced margin */
+            margin: 5px 0;
             color: #666;
-            font-size: clamp(10px, 2vw, 12px); /* Smaller font */
+            font-size: clamp(10px, 2vw, 12px);
         }
 
         .pause-overlay {
@@ -65,7 +69,7 @@
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            font-size: clamp(16px, 4vw, 24px); /* Smaller font */
+            font-size: clamp(16px, 4vw, 24px);
             color: white;
             text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
             display: none;
@@ -74,9 +78,10 @@
         .mobile-controls {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
-            gap: 5px; /* Reduced gap */
-            width: min(250px, 90vw); /* Smaller width */
-            margin: 10px auto; /* Reduced margin */
+            gap: 5px;
+            width: min(250px, 90vw);
+            margin: 10px auto;
+            touch-action: manipulation;
         }
 
         #achievement-image {
@@ -84,21 +89,24 @@
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            max-width: min(150px, 40vw); /* Smaller image */
+            max-width: min(150px, 40vw);
             display: none;
             z-index: 1000;
         }
 
         .control-btn {
-            padding: 10px 8px; /* Reduced padding */
+            padding: 10px 8px;
             background: #333;
             color: white;
             border: none;
             border-radius: 6px;
-            font-size: 16px; /* Smaller font */
+            font-size: 16px;
             touch-action: manipulation;
             user-select: none;
             -webkit-tap-highlight-color: transparent;
+            -webkit-touch-callout: none;
+            cursor: pointer;
+            min-height: 44px;
         }
 
         .control-btn:active {
@@ -113,7 +121,7 @@
 
         @media (max-width: 768px) {
             body {
-                padding: 5px; /* Further reduced padding for mobile */
+                padding: 5px;
             }
 
             .controls p:not(:first-child) {
@@ -121,13 +129,18 @@
             }
 
             .container {
-                padding: 0 3px; /* Further reduced padding */
+                padding: 0 3px;
+            }
+            
+            .control-btn {
+                font-size: 20px;
+                padding: 12px 8px;
             }
         }
 
         footer {
-            margin-top: 10px; /* Reduced margin */
-            font-size: 12px; /* Smaller font */
+            margin-top: 10px;
+            font-size: 12px;
             color: #666;
         }
     </style>
@@ -167,7 +180,7 @@
     <script>
         const canvas = document.getElementById('game-board');
         const ctx = canvas.getContext('2d');
-        const BLOCK_SIZE = 24; // Reduced block size
+        const BLOCK_SIZE = 24;
         const BOARD_WIDTH = 10;
         const BOARD_HEIGHT = 20;
         let isPaused = false;
@@ -198,8 +211,8 @@
         // Adjust canvas size based on screen size
         function resizeCanvas() {
             const container = document.querySelector('.container');
-            const maxWidth = Math.min(240, container.offsetWidth - 10); // Reduced max width
-            const height = (maxWidth / 240) * 480; // Adjusted ratio
+            const maxWidth = Math.min(240, container.offsetWidth - 10);
+            const height = (maxWidth / 240) * 480;
             
             canvas.style.width = maxWidth + 'px';
             canvas.style.height = height + 'px';
@@ -430,6 +443,7 @@
         canvas.addEventListener('touchmove', drag);
         canvas.addEventListener('mouseup', endDrag);
         canvas.addEventListener('touchend', endDrag);
+        canvas.addEventListener('mouseleave', endDrag);
 
         function startDrag(e) {
             if (isPaused) return;
@@ -500,24 +514,33 @@
         const addMobileButton = (id, action) => {
             const btn = document.getElementById(id);
             let pressTimer;
+            let isPressed = false;
             
-            btn.addEventListener('touchstart', (e) => {
+            const startAction = (e) => {
                 e.preventDefault();
-                if (!isPaused) {
+                if (!isPaused && !isPressed) {
+                    isPressed = true;
                     action();
                     btn.style.background = '#555';
                     if (id === 'down-btn') {
                         pressTimer = setInterval(action, 100);
                     }
                 }
-            });
+            };
 
-            btn.addEventListener('touchend', () => {
+            const endAction = () => {
+                isPressed = false;
                 btn.style.background = '#333';
                 if (pressTimer) {
                     clearInterval(pressTimer);
                 }
-            });
+            };
+
+            btn.addEventListener('touchstart', startAction);
+            btn.addEventListener('mousedown', startAction);
+            btn.addEventListener('touchend', endAction);
+            btn.addEventListener('mouseup', endAction);
+            btn.addEventListener('mouseleave', endAction);
         };
 
         addMobileButton('left-btn', () => move(-1));
@@ -526,9 +549,15 @@
         addMobileButton('rotate-btn', () => rotate());
         addMobileButton('drop-btn', () => hardDrop());
         
-        document.getElementById('pause-btn').addEventListener('touchstart', (e) => {
+        const pauseBtn = document.getElementById('pause-btn');
+        pauseBtn.addEventListener('touchstart', (e) => {
             e.preventDefault();
             togglePause();
+            pauseBtn.style.background = '#555';
+        });
+        
+        pauseBtn.addEventListener('touchend', () => {
+            pauseBtn.style.background = '#333';
         });
 
         // Prevent default touch behaviors

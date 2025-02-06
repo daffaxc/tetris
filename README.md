@@ -12,7 +12,7 @@
             font-family: Arial, sans-serif;
             min-height: 100vh;
             margin: 0;
-            padding: 20px;
+            padding: 10px; /* Reduced padding */
             touch-action: manipulation;
             overscroll-behavior: none;
         }
@@ -20,44 +20,44 @@
         .container {
             text-align: center;
             max-width: 100%;
-            padding: 0 10px;
+            padding: 0 5px; /* Reduced padding */
         }
 
         h1 {
             color: #333;
-            margin-bottom: 20px;
-            font-size: clamp(20px, 4vw, 32px);
+            margin-bottom: 10px; /* Reduced margin */
+            font-size: clamp(16px, 3.5vw, 24px); /* Smaller font size */
         }
         
         #game-board {
             border: 2px solid #333;
             background-color: #111;
             cursor: pointer;
-            box-shadow: 0 0 20px rgba(0,0,0,0.2);
-            max-width: 100%;
+            box-shadow: 0 0 10px rgba(0,0,0,0.2);
+            max-width: 95%; /* Slightly smaller width */
             height: auto;
             touch-action: none;
         }
 
         .game-stats {
-            margin: 15px 0;
-            font-size: clamp(16px, 3.5vw, 22px);
+            margin: 10px 0; /* Reduced margin */
+            font-size: clamp(14px, 3vw, 18px); /* Smaller font */
             color: #333;
             font-weight: bold;
         }
 
         .controls {
-            margin: 15px 0;
-            padding: 12px;
+            margin: 10px 0; /* Reduced margin */
+            padding: 8px; /* Reduced padding */
             background: #fff;
-            border-radius: 8px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            border-radius: 6px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
         }
 
         .controls p {
-            margin: 8px 0;
+            margin: 5px 0; /* Reduced margin */
             color: #666;
-            font-size: clamp(12px, 2.5vw, 14px);
+            font-size: clamp(10px, 2vw, 12px); /* Smaller font */
         }
 
         .pause-overlay {
@@ -65,7 +65,7 @@
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            font-size: clamp(20px, 5vw, 28px);
+            font-size: clamp(16px, 4vw, 24px); /* Smaller font */
             color: white;
             text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
             display: none;
@@ -74,9 +74,9 @@
         .mobile-controls {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
-            gap: 8px;
-            width: min(280px, 80vw);
-            margin: 15px auto;
+            gap: 5px; /* Reduced gap */
+            width: min(250px, 90vw); /* Smaller width */
+            margin: 10px auto; /* Reduced margin */
         }
 
         #achievement-image {
@@ -84,18 +84,18 @@
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            max-width: min(200px, 50vw);
+            max-width: min(150px, 40vw); /* Smaller image */
             display: none;
             z-index: 1000;
         }
 
         .control-btn {
-            padding: 15px 10px;
+            padding: 10px 8px; /* Reduced padding */
             background: #333;
             color: white;
             border: none;
-            border-radius: 8px;
-            font-size: 18px;
+            border-radius: 6px;
+            font-size: 16px; /* Smaller font */
             touch-action: manipulation;
             user-select: none;
             -webkit-tap-highlight-color: transparent;
@@ -113,7 +113,7 @@
 
         @media (max-width: 768px) {
             body {
-                padding: 10px;
+                padding: 5px; /* Further reduced padding for mobile */
             }
 
             .controls p:not(:first-child) {
@@ -121,13 +121,13 @@
             }
 
             .container {
-                padding: 0 5px;
+                padding: 0 3px; /* Further reduced padding */
             }
         }
 
         footer {
-            margin-top: 15px;
-            font-size: 14px;
+            margin-top: 10px; /* Reduced margin */
+            font-size: 12px; /* Smaller font */
             color: #666;
         }
     </style>
@@ -139,7 +139,7 @@
             Score: <span id="score">0</span><br>
             Best Score: <span id="best-score">0</span>
         </div>
-        <canvas id="game-board" width="300" height="600"></canvas>
+        <canvas id="game-board" width="240" height="480"></canvas>
         <div class="pause-overlay" id="pause-text">PAUSED</div>
         <img id="achievement-image" src="WhatsApp Image 2025-02-06 at 07.27.35_3bc29a35.jpg" alt="New High Score!">
         <div class="controls">
@@ -167,7 +167,7 @@
     <script>
         const canvas = document.getElementById('game-board');
         const ctx = canvas.getContext('2d');
-        const BLOCK_SIZE = 30;
+        const BLOCK_SIZE = 24; // Reduced block size
         const BOARD_WIDTH = 10;
         const BOARD_HEIGHT = 20;
         let isPaused = false;
@@ -198,8 +198,8 @@
         // Adjust canvas size based on screen size
         function resizeCanvas() {
             const container = document.querySelector('.container');
-            const maxWidth = Math.min(300, container.offsetWidth - 20);
-            const height = (maxWidth / 300) * 600;
+            const maxWidth = Math.min(240, container.offsetWidth - 10); // Reduced max width
+            const height = (maxWidth / 240) * 480; // Adjusted ratio
             
             canvas.style.width = maxWidth + 'px';
             canvas.style.height = height + 'px';

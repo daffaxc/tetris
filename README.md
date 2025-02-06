@@ -181,7 +181,8 @@
             <button class="control-btn" id="pause-btn">⏸️</button>
         </div>
         <footer>
-            <p>A Simple Tetris Game</p>
+            <p>created by daffa alzeinna</data>
+            </p>
         </footer>
     </div>
 

@@ -14,17 +14,19 @@
             margin: 0;
             padding: 20px;
             touch-action: manipulation;
+            overscroll-behavior: none;
         }
 
         .container {
             text-align: center;
             max-width: 100%;
+            padding: 0 10px;
         }
 
         h1 {
             color: #333;
-            margin-bottom: 30px;
-            font-size: clamp(24px, 5vw, 36px);
+            margin-bottom: 20px;
+            font-size: clamp(20px, 4vw, 32px);
         }
         
         #game-board {
@@ -34,27 +36,28 @@
             box-shadow: 0 0 20px rgba(0,0,0,0.2);
             max-width: 100%;
             height: auto;
+            touch-action: none;
         }
 
         .game-stats {
-            margin: 20px 0;
-            font-size: clamp(18px, 4vw, 24px);
+            margin: 15px 0;
+            font-size: clamp(16px, 3.5vw, 22px);
             color: #333;
             font-weight: bold;
         }
 
         .controls {
-            margin: 20px 0;
-            padding: 15px;
+            margin: 15px 0;
+            padding: 12px;
             background: #fff;
             border-radius: 8px;
             box-shadow: 0 2px 10px rgba(0,0,0,0.1);
         }
 
         .controls p {
-            margin: 10px 0;
+            margin: 8px 0;
             color: #666;
-            font-size: clamp(14px, 3vw, 16px);
+            font-size: clamp(12px, 2.5vw, 14px);
         }
 
         .pause-overlay {
@@ -62,16 +65,18 @@
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            font-size: clamp(24px, 6vw, 32px);
+            font-size: clamp(20px, 5vw, 28px);
             color: white;
             text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
             display: none;
         }
 
         .mobile-controls {
-            display: none;
-            margin-top: 20px;
-            gap: 10px;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 8px;
+            width: min(280px, 80vw);
+            margin: 15px auto;
         }
 
         #achievement-image {
@@ -79,31 +84,51 @@
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            max-width: 200px;
+            max-width: min(200px, 50vw);
             display: none;
             z-index: 1000;
         }
 
-        @media (max-width: 768px) {
-            .mobile-controls {
-                display: grid;
-                grid-template-columns: repeat(3, 1fr);
-                width: 200px;
-            }
+        .control-btn {
+            padding: 15px 10px;
+            background: #333;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 18px;
+            touch-action: manipulation;
+            user-select: none;
+            -webkit-tap-highlight-color: transparent;
+        }
 
-            .control-btn {
-                padding: 15px;
-                background: #333;
-                color: white;
-                border: none;
-                border-radius: 5px;
-                font-size: 20px;
-                touch-action: manipulation;
+        .control-btn:active {
+            background: #555;
+        }
+
+        @media (min-width: 769px) {
+            .mobile-controls {
+                display: none;
+            }
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding: 10px;
             }
 
             .controls p:not(:first-child) {
                 display: none;
             }
+
+            .container {
+                padding: 0 5px;
+            }
+        }
+
+        footer {
+            margin-top: 15px;
+            font-size: 14px;
+            color: #666;
         }
     </style>
 </head>
@@ -132,9 +157,10 @@
             <button class="control-btn" id="right-btn">→</button>
             <button class="control-btn" id="down-btn">↓</button>
             <button class="control-btn" id="drop-btn">⬇️</button>
+            <button class="control-btn" id="pause-btn">⏸️</button>
         </div>
         <footer>
-            <p>Created by daffa sigma | respek ye</p>
+            <p>Created by daffa alzeinna | develover baik hati</p>
         </footer>
     </div>
 
@@ -155,13 +181,24 @@
         let dragStartX = 0;
         let dragStartY = 0;
         let originalPiecePos = {x: 0, y: 0};
+        let touchStartX = null;
+        let touchStartY = null;
 
         document.getElementById('best-score').textContent = bestScore;
+
+        // Prevent scrolling when touching the canvas
+        canvas.addEventListener('touchstart', function(e) {
+            e.preventDefault();
+        }, { passive: false });
+
+        canvas.addEventListener('touchmove', function(e) {
+            e.preventDefault();
+        }, { passive: false });
 
         // Adjust canvas size based on screen size
         function resizeCanvas() {
             const container = document.querySelector('.container');
-            const maxWidth = Math.min(300, container.offsetWidth - 40);
+            const maxWidth = Math.min(300, container.offsetWidth - 20);
             const height = (maxWidth / 300) * 600;
             
             canvas.style.width = maxWidth + 'px';
@@ -396,7 +433,9 @@
 
         function startDrag(e) {
             if (isPaused) return;
-            e.preventDefault();
+            if (e.type.startsWith('touch')) {
+                e.preventDefault();
+            }
             
             const pos = getMousePos(e);
             dragStartX = pos.x;
@@ -407,7 +446,9 @@
 
         function drag(e) {
             if (!isDragging || isPaused) return;
-            e.preventDefault();
+            if (e.type.startsWith('touch')) {
+                e.preventDefault();
+            }
             
             const pos = getMousePos(e);
             const deltaX = pos.x - dragStartX;
@@ -455,12 +496,47 @@
             }
         });
 
-        // Mobile controls
-        document.getElementById('left-btn').addEventListener('click', () => move(-1));
-        document.getElementById('right-btn').addEventListener('click', () => move(1));
-        document.getElementById('down-btn').addEventListener('click', () => drop());
-        document.getElementById('rotate-btn').addEventListener('click', () => rotate());
-        document.getElementById('drop-btn').addEventListener('click', () => hardDrop());
+        // Mobile controls with touch feedback
+        const addMobileButton = (id, action) => {
+            const btn = document.getElementById(id);
+            let pressTimer;
+            
+            btn.addEventListener('touchstart', (e) => {
+                e.preventDefault();
+                if (!isPaused) {
+                    action();
+                    btn.style.background = '#555';
+                    if (id === 'down-btn') {
+                        pressTimer = setInterval(action, 100);
+                    }
+                }
+            });
+
+            btn.addEventListener('touchend', () => {
+                btn.style.background = '#333';
+                if (pressTimer) {
+                    clearInterval(pressTimer);
+                }
+            });
+        };
+
+        addMobileButton('left-btn', () => move(-1));
+        addMobileButton('right-btn', () => move(1));
+        addMobileButton('down-btn', () => drop());
+        addMobileButton('rotate-btn', () => rotate());
+        addMobileButton('drop-btn', () => hardDrop());
+        
+        document.getElementById('pause-btn').addEventListener('touchstart', (e) => {
+            e.preventDefault();
+            togglePause();
+        });
+
+        // Prevent default touch behaviors
+        document.addEventListener('touchmove', (e) => {
+            if (e.target.tagName !== 'CANVAS') {
+                e.preventDefault();
+            }
+        }, { passive: false });
 
         currentPiece = createPiece();
         update();

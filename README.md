@@ -24,6 +24,7 @@
             text-align: center;
             max-width: 100%;
             padding: 0 5px;
+            position: relative;
         }
 
         h1 {
@@ -73,14 +74,15 @@
             color: white;
             text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
             display: none;
+            pointer-events: none;
         }
 
         .mobile-controls {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
-            gap: 5px;
-            width: min(250px, 90vw);
-            margin: 10px auto;
+            gap: 10px;
+            width: min(300px, 90vw);
+            margin: 15px auto;
             touch-action: manipulation;
         }
 
@@ -92,21 +94,23 @@
             max-width: min(150px, 40vw);
             display: none;
             z-index: 1000;
+            pointer-events: none;
         }
 
         .control-btn {
-            padding: 10px 8px;
+            padding: 15px 10px;
             background: #333;
             color: white;
             border: none;
-            border-radius: 6px;
-            font-size: 16px;
+            border-radius: 8px;
+            font-size: 20px;
             touch-action: manipulation;
             user-select: none;
             -webkit-tap-highlight-color: transparent;
             -webkit-touch-callout: none;
             cursor: pointer;
-            min-height: 44px;
+            min-height: 50px;
+            transition: background-color 0.2s;
         }
 
         .control-btn:active {
@@ -133,13 +137,17 @@
             }
             
             .control-btn {
-                font-size: 20px;
-                padding: 12px 8px;
+                font-size: 24px;
+                padding: 15px 10px;
+            }
+
+            #game-board {
+                max-width: 90%;
             }
         }
 
         footer {
-            margin-top: 10px;
+            margin-top: 15px;
             font-size: 12px;
             color: #666;
         }
@@ -211,7 +219,7 @@
         // Adjust canvas size based on screen size
         function resizeCanvas() {
             const container = document.querySelector('.container');
-            const maxWidth = Math.min(240, container.offsetWidth - 10);
+            const maxWidth = Math.min(240, container.offsetWidth * 0.9);
             const height = (maxWidth / 240) * 480;
             
             canvas.style.width = maxWidth + 'px';
@@ -258,6 +266,8 @@
         function drawBlock(x, y, color) {
             ctx.fillStyle = color;
             ctx.fillRect(x * BLOCK_SIZE, y * BLOCK_SIZE, BLOCK_SIZE - 1, BLOCK_SIZE - 1);
+            ctx.strokeStyle = '#000';
+            ctx.strokeRect(x * BLOCK_SIZE, y * BLOCK_SIZE, BLOCK_SIZE - 1, BLOCK_SIZE - 1);
         }
 
         function drawBoard() {
@@ -330,8 +340,16 @@
             const pos = currentPiece.pos;
             currentPiece.matrix = rotated;
             
-            if (collide()) {
-                currentPiece.matrix = matrix;
+            // Wall kick
+            let offset = 1;
+            while (collide()) {
+                currentPiece.pos.x += offset;
+                offset = -(offset + (offset > 0 ? 1 : -1));
+                if (offset > currentPiece.matrix[0].length) {
+                    currentPiece.matrix = matrix;
+                    currentPiece.pos.x = pos.x;
+                    return;
+                }
             }
         }
 
@@ -536,7 +554,7 @@
                 }
             };
 
-            btn.addEventListener('touchstart', startAction);
+            btn.addEventListener('touchstart', startAction, { passive: false });
             btn.addEventListener('mousedown', startAction);
             btn.addEventListener('touchend', endAction);
             btn.addEventListener('mouseup', endAction);
@@ -554,7 +572,7 @@
             e.preventDefault();
             togglePause();
             pauseBtn.style.background = '#555';
-        });
+        }, { passive: false });
         
         pauseBtn.addEventListener('touchend', () => {
             pauseBtn.style.background = '#333';

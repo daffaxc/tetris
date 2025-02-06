@@ -155,14 +155,14 @@
 </head>
 <body>
     <div class="container">
-        <h1>TETRIS BY DAFFA ALZEINNA</h1>
+        <h1>TETRIS</h1>
         <div class="game-stats">
             Score: <span id="score">0</span><br>
             Best Score: <span id="best-score">0</span>
         </div>
         <canvas id="game-board" width="240" height="480"></canvas>
         <div class="pause-overlay" id="pause-text">PAUSED</div>
-        <img id="achievement-image" src="WhatsApp Image 2025-02-06 at 07.27.35_3bc29a35.jpg" alt="New High Score!">
+        <img id="achievement-image" src="achievement.png" alt="New High Score!">
         <div class="controls">
             <p>Controls:</p>
             <p>← → : Move</p>
@@ -181,7 +181,7 @@
             <button class="control-btn" id="pause-btn">⏸️</button>
         </div>
         <footer>
-            <p>Created by daffa alzeinna | develover baik hati</p>
+            <p>A Simple Tetris Game</p>
         </footer>
     </div>
 

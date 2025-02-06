@@ -134,7 +134,7 @@
 </head>
 <body>
     <div class="container">
-        <h1>TETRIS BUATAN ORANG SIGMA</h1>
+        <h1>TETRIS BY DAFFA ALZEINNA</h1>
         <div class="game-stats">
             Score: <span id="score">0</span><br>
             Best Score: <span id="best-score">0</span>

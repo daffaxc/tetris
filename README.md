@@ -3,7 +3,55 @@
 <head>
     <title>Tetris Game</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <link rel="stylesheet" href="styles.css">
+    <style>
+        .container {
+            text-align: center;
+            padding: 20px;
+        }
+        .game-stats {
+            margin: 10px 0;
+        }
+        #game-board {
+            border: 2px solid #333;
+        }
+        .pause-overlay {
+            display: none;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 24px;
+            font-weight: bold;
+        }
+        #achievement-image {
+            display: none;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 200px;
+        }
+        .controls {
+            margin: 20px 0;
+        }
+        .mobile-controls {
+            display: none;
+        }
+        .control-btn {
+            padding: 10px 20px;
+            margin: 5px;
+            font-size: 18px;
+        }
+        footer {
+            margin-top: 20px;
+            color: #666;
+        }
+        @media (max-width: 768px) {
+            .mobile-controls {
+                display: block;
+            }
+        }
+    </style>
 </head>
 <body>
     <div class="container">
@@ -33,8 +81,7 @@
             <button class="control-btn" id="pause-btn">⏸️</button>
         </div>
         <footer>
-            <p>created by daffa alzeinna</data>
-            </p>
+            <p>created by daffa alzeinna</p>
         </footer>
     </div>
 
